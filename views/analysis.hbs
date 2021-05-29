@@ -1,0 +1,83 @@
+
+<div class="container-fluid">
+	<div class="row justify-content-center">
+		<div class='col-4'>
+			<h2>數據分析</h2> <hr>
+		</div>
+	</div>
+	<div class="row" >				
+		<div class="col-8">			
+			<img id = 'myImg' src="img/Statistics(common).png" style="width:100%;height:100%;object-fit:cover;">
+		</div>
+		<div class="col-4">	
+				<h3> 請選擇你要看的數據分析 : </h3>
+				<h4 style="text-align: left; ">
+				<form>
+					<input type="checkbox" value="1" name="Statistics" checked="true" disabled="true" > 開工日期件數統計(一般派工)<br>
+					<input type="checkbox" value="2" name="Statistics" > 開工日期件數統計(緊急派工)<br>
+					<input type="checkbox" value="3" name="Statistics" > 相關性分析 <br>
+					
+						<h5 style="text-align: left; margin-left: 20px;">西元
+						<select name="Start-Year" style="display:inline" disabled="true" onchange="LimitChoice()">
+　							<option value="2013">2013年</option>
+　							<option value="2014">2014年</option>
+　							<option value="2015">2015年</option>
+　							<option value="2016">2016年</option>
+							<option value="2017">2017年</option>
+						</select>
+						年 ~ 
+						<select name="End-Year" style="display:inline" disabled="true">
+　							<option value="2013">2013年</option>
+　							<option value="2014">2014年</option>
+　							<option value="2015">2015年</option>
+　							<option value="2016">2016年</option>
+							<option value="2017">2017年</option>
+						</select>
+						年</h5>  
+						<h5 style="text-align: left; margin-left: 20px;">   選擇類型:
+						<select name="construction" style="display:inline" disabled="true" >
+　							<option value="Normal">一般派工</option>
+　							<option value="Emergency">緊急派工</option>
+						</select>
+						<h5 style="text-align: left; margin-left: 20px;">   探討因素:
+						<select name="factor" style="display:inline" disabled="true">
+　							<option value="PopulationGrowthRate">人口成長率</option>
+　							<option value="BuildingCount">建案數量</option>
+							<option value="LandPrice">地價</option>
+							<option value="PopulationDensity">人口密度</option>
+							<option value="GrossPopulation">區域人口數</option>
+							<option value="SocialPopulationGrowthRate">社會人口成長率</option>
+							<option value="NaturalPopulationGrowthRate">自然人口成長率</option>
+						</select>
+						<h4> <h4>
+				</form>	
+				<button type="button" submit = "submit" > 畫圖 </button>
+			</div>	
+		</div>			
+	</div>
+	<div class="row justify-content-center">
+		<div class='col-4'>
+			<h2>地圖動點呈現</h2> <hr>
+		</div>
+	</div>
+
+	<div class="row" >	
+		<h3>
+			<form>			 
+				<input type="checkbox" value="1" name="DynamicMap" checked="true" > 一般派工
+				<input type="checkbox" value="2" name="DynamicMap" > 緊急派工
+			</form>
+			<iframe id="iframePage" src="https://plot.ly/~allen120932/10.embed" width="85%" height="450px" scrolling="No">
+			</iframe>
+		</div>			
+	</div> 
+	<script src="js/wow.min.js"></script>
+	<script src="js/jquery.easing.1.3.js"></script>
+	<script src="js/jquery.isotope.min.js"></script>
+	<script src="js/jquery.bxslider.min.js"></script>
+	<script type="text/javascript" src="js/fliplightbox.min.js"></script>
+	<script src="js/functions.js"></script>
+	<script src="js/analysis.js"></script>
+	<script type="text/javascript">$('.portfolio').flipLightBox()</script>
+
+  </body>

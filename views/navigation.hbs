@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<link rel="stylesheet" type="text/css" href="css/navigation.css">
+<link href="css/jquery-ui.css" rel="stylesheet">
+<script src="js/jquery-ui.js"></script>
+
+<div class="container-fluid">
+	<div class="row justify-content-center">
+		<div class='col-4'>
+			<h2>地圖資訊及智慧導航</h2> <hr>
+		</div>
+	</div>
+    <div class="row">
+		<div class='col-8'>
+			<div id="floating-panel">
+				
+				<input type="text" id="datepicker" name="datapicker" value="05/01/2021">
+				<input type="text" id="start" name="start" placeholder="輸入起始地點">
+				<input type="text" id="end" name="end" placeholder="輸入目標地點">
+				<h5></h5>
+				<h5 style="text-align: left;"> 顯示施工位置
+				<input type="checkbox" value="1" name="point" > 緊急施工
+				<input type="checkbox" value="2" name="point" > 一般施工
+			</div>
+			<div id="map"></div>
+		</div>
+		<div class='col-4'>
+			<h5>導航路線</h5> <hr>
+			<div id="right-panel"></div>
+		</div>
+	</div>
+</div>
+
+
+	
+    
+<script>
+    var year, month, day;
+	//日期選單
+	$(function() {
+		$( "#datepicker" ).datepicker();
+	});
+
+	  var startLocation,endLocation;
+	  var path = null;
+	  var roadblock = [];
+	  var markerList = [];
+	  function initMap() {
+		// DirectionsRenderer 物件呈現
+		// directionsService物件計算路線（使用各種交通方式）
+        var directionsRenderer = new google.maps.DirectionsRenderer;
+        var directionsService = new google.maps.DirectionsService;
+		
+		//produce the simple map
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 5,
+          center: {lat: 23.5, lng: 121}
+		  
+        });
+
+		directionsRenderer.setMap(map);
+		// design the hint of location searching-box
+		var searchBox_Start = new google.maps.places.SearchBox(document.getElementById('start'));
+		var searchBox_End = new google.maps.places.SearchBox(document.getElementById('end'));
+		map.controls[google.maps.ControlPosition.TOP_LEFT].push(searchBox_Start);
+		map.controls[google.maps.ControlPosition.TOP_LEFT].push(searchBox_End);
+		map.addListener("bounds_changed", () => {
+			searchBox_Start.setBounds(map.getBounds());
+			searchBox_End.setBounds(map.getBounds());
+		});
+        var onChangeHandler = function() {
+			//get the time of datapicker
+			[month, day, year] = ($("#datepicker").datepicker().val()).split('/');
+
+			for( k =0; k< markerList.length; k++){
+				markerList[k].setMap(null);
+			}
+			markerList = [];
+			roadblock = [];
+			var NowDate = new Date(year,month-1,day);
+			var StartDate,EndDate ;
+			/*
+		  	for(i = 1;i < array.length;i++){
+				StartDate = new Date(parseInt(array[i][0].substring(0,4)),parseInt(array[i][0].substring(5,7))-1,parseInt(array[i][0].substring(8,10)));
+				EndDate = new Date(parseInt(array[i][1].substring(0,4)),parseInt(array[i][1].substring(5,7))-1,parseInt(array[i][1].substring(8,10)));
+				
+				if( NowDate.getTime() >=  StartDate.getTime() ){
+					if( NowDate.getTime() <=  EndDate.getTime()){
+						myLatLng = new google.maps.LatLng(array[i][4], array[i][3]);
+						var marker = new google.maps.Marker({
+							position: myLatLng,
+							map: map
+						});
+						markerList.push(marker);
+						roadblock.push(myLatLng);	
+					}
+				}
+			}*/
+          calculateAndDisplayRoute(directionsService, directionsRenderer, map);
+        };
+		document.getElementById('submit').addEventListener('click', onChangeHandler);
+		
+      }
+
+      function calculateAndDisplayRoute(directionsService, directionsRenderer, map) {
+		// var start = document.getElementById('start').value;
+        var start_loc = $('#start').val();
+        var end_loc = $('#end').val();
+		/*
+		var route_req = {
+		  origin: start,
+          destination: end,
+          travelMode: 'DRIVING'
+		}
+		*/
+        directionsService.route({
+          origin: start_loc,
+          destination: end_loc,
+          travelMode: 'DRIVING',
+		  provideRouteAlternatives: true,
+		  avoidHighways: true,
+		  avoidTolls: true,
+        }, function(response, status) {		
+          if (status === 'OK') {
+			
+			  /*
+			if(startDot != null)
+				startDot.setMap(null);
+			if(endDot != null)
+				endDot.setMap(null);*/
+			/*
+			
+			*/
+			// display route 
+            directionsRenderer.setDirections(response);
+			
+			var points ;
+			//zoom
+			var latlngbounds = new google.maps.LatLngBounds();    
+			//direction text
+			var rightpanel = document.getElementById('right-panel');	
+			var final_legs = response.routes[0].legs;
+			/*
+			console.log(response);
+			for(index = 0;index < response.routes.length; index++ ){
+				console.log(index);
+				points = new Array();
+				var legs = response.routes[index].legs;
+				final_legs = legs;
+				for (i = 0; i < legs.length; i++) {
+					var steps = legs[i].steps;
+					for (j = 0; j < steps.length; j++) {
+						var nextSegment = steps[j].path;
+						for (k = 0; k < nextSegment.length; k++) {
+							points.push(new google.maps.LatLng(nextSegment[k].lat(),nextSegment[k].lng()));
+						}
+					}
+				}
+				
+				//avoid roadblock
+				var shortest_distance = null;
+				for(j = 0; j < points.length;j++){*/
+					/* ***********************************************************
+						
+						RoadBlock
+						
+					 ************************************************************** */
+					 /*
+					latlngbounds.extend(points[j]);
+					var distance ;
+					for(k = 0; k< roadblock.length; k++){
+						distance = google.maps.geometry.spherical.computeDistanceBetween(roadblock[k], points[j]);
+					
+						if (shortest_distance == null || distance < shortest_distance) {
+							shortest_distance = distance;
+						}
+					}
+				}
+				console.log(shortest_distance);				
+				if(shortest_distance >= 20)
+					break;
+			}
+			if(path != null)
+				path.setMap(null);			
+			path = new google.maps.Polyline({
+				path: points,
+				strokeColor: '#2E2EFE',
+				strokeOpacity: 0.8,
+				strokeWeight: 5
+			});*/
+			console.log(final_legs);
+			rightpanel.innerHTML = "";
+			rightpanel.innerHTML += "<br />";
+			rightpanel.innerHTML += "總距離 : "+final_legs[0].distance.text+"<br />";
+			rightpanel.innerHTML += "所需時間 : "+final_legs[0].duration.text+"<br />";
+			rightpanel.innerHTML += '<ul>' 
+			for (i=0;i<final_legs.length;i++) {
+				if (i == 0) { 
+					startLocation = new google.maps.LatLng(final_legs[i].start_location.lat(), final_legs[i].start_location.lng());
+				}				
+				//endLocation.latlng = final_legs[i].end_location;
+				//endLocation.address = final_legs[i].end_address;				
+				endLocation = new google.maps.LatLng(final_legs[i].end_location.lat(), final_legs[i].end_location.lng());
+				var steps = final_legs[i].steps;
+				for (j=0;j<steps.length;j++) {
+					var nextSegment = steps[j].path;
+					rightpanel.innerHTML += "<li>"+steps[j].instructions;
+					var dist_dur = "";
+					if (steps[j].distance && steps[j].distance.text) dist_dur += "&nbsp;"+steps[j].distance.text;
+					if (steps[j].duration && steps[j].duration.text) dist_dur += "&nbsp;"+steps[j].duration.text;
+					if (dist_dur != "") {
+						rightpanel.innerHTML += "("+dist_dur+")<br /></li>";
+					} else {
+						rightpanel.innerHTML += "</li>";
+					}
+				}
+			}
+			rightpanel.innerHTML += "</ul>"	
+			var startMarker = new google.maps.Marker({
+				position: new google.maps.LatLng(startLocation.lat(), startLocation.lng()),
+				map: map,
+				icon: {
+				  url: "img/start.png",
+				  scaledSize: new google.maps.Size(40, 40)
+			    }
+			});
+			var endMarker = new google.maps.Marker({
+				position: new google.maps.LatLng(endLocation.lat(), endLocation.lng()),
+				map: map,
+			});	
+			
+			//map.fitBounds(latlngbounds);
+			//path.setMap(map);
+          } else {
+            window.alert('Directions request failed due to ' + status);
+          }
+		  
+        });
+      }
+    </script>
+	
+   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAMhc_smDSfc7gYaAF0kh9JC--CzVGQeUA&&libraries=places&callback=initMap"></script>
+		
+
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="js/wow.min.js"></script>
+	<script src="js/jquery.easing.1.3.js"></script>
+	<script src="js/jquery.isotope.min.js"></script>
+	<script src="js/jquery.bxslider.min.js"></script>
+	<script type="text/javascript" src="js/fliplightbox.min.js"></script>
+	<script src="js/functions.js"></script>
+	
+	<script type="text/javascript">$('.portfolio').flipLightBox()</script>
+  </body>

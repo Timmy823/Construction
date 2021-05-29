@@ -1,0 +1,150 @@
+
+<div class="container-fluid">
+	<div class="row justify-content-center">
+		<div class='col-4'>
+			<h2>數據分析</h2> <hr>
+		</div>
+	</div>
+	<div class="row" >				
+		<div class="col-8">			
+			<img id = 'myImg' src="img/Statistics(common).png" style="width:100%;height:100%;object-fit:cover;">
+		</div>
+		<div class="col-4">	
+				<h3> 請選擇數據分析圖 : </h3>
+				<form>
+					<input type="checkbox" value="1" name="Statistics" checked="true" disabled="true" > 
+					    <h4>開工日期件數統計(一般派工)<br> </h4>
+					<input type="checkbox" value="2" name="Statistics"> 開工日期件數統計(緊急派工)<br>
+					<input type="checkbox" value="3" name="Statistics" > 工程相關性分析 <br>
+					
+						<h4>西元
+						<select name="Start-Year" style="display:inline"  onchange="LimitChoice()">
+　							<option value="2013">2013年</option>
+　							<option value="2014">2014年</option>
+　							<option value="2015">2015年</option>
+　							<option value="2016">2016年</option>
+							<option value="2017">2017年</option>
+						</select>
+						年 ~ 
+						<select name="End-Year" style="display:inline" >
+　							<option value="2013">2013年</option>
+　							<option value="2014">2014年</option>
+　							<option value="2015">2015年</option>
+　							<option value="2016">2016年</option>
+							<option value="2017">2017年</option>
+						</select>
+						年<h4>  
+						<h4>   選擇類型:
+						<select name="construction" style="display:inline" >
+　							<option value="Normal">一般派工</option>
+　							<option value="Emergency">緊急派工</option>
+						</select>
+						<h4>   探討因素:
+						<select name="factor" style="display:inline" >
+　							<option value="PopulationGrowthRate">人口成長率</option>
+　							<option value="BuildingCount">建案數量</option>
+							<option value="LandPrice">地價</option>
+							<option value="PopulationDensity">人口密度</option>
+							<option value="GrossPopulation">區域人口數</option>
+							<option value="SocialPopulationGrowthRate">社會人口成長率</option>
+							<option value="NaturalPopulationGrowthRate">自然人口成長率</option>
+						</select>
+				</form>	
+				<button type="button" submit = "submit" > 畫圖 </button>
+			</div>	
+		</div>			
+	</div>
+	<div class="row justify-content-center">
+		<div class='col-4'>
+			<h2>地圖動點呈現</h2> <hr>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="row" >	
+			<h3>
+			<form>			 
+				<input type="checkbox" value="1" name="DynamicMap" checked="true" > 一般派工
+				<input type="checkbox" value="2" name="DynamicMap" > 緊急派工
+			</form>
+			<iframe id="iframePage" src="https://plot.ly/~allen120932/10.embed" width="85%" height="450px" scrolling="No">
+			</iframe>
+		</div>			
+	</div>
+	<script>
+		$('input[name="Statistics"]').click(function(){
+			if($(this).is(':checked')){
+				$('input[name="Statistics"]').prop('checked',false);
+				$(this).prop('checked',true);
+				//$('button[submit = "submit"]').css("animation","Blinking");
+			}
+		});
+		$('input[name="DynamicMap"]').click(function(){
+			if($(this).is(':checked')){
+				$('input[name="DynamicMap"]').prop('checked',false);
+				$(this).prop('checked',true);
+				$(this).prop('disabled',true);
+				console.log($(this).val());
+				if($(this).val() == 1)
+					$("iframe").attr("src","https://plot.ly/~allen120932/10.embed");
+				if($(this).val() == 2)
+					$("iframe").attr("src","https://plot.ly/~allen120932/17.embed");
+			}
+		});
+		function LimitChoice(){
+			var number;
+			number = $("select[name='Start-Year']").val();
+			//console.log(number);
+			$("select[name='End-Year'] option").each(function(i,item){
+				$(item).attr('disabled', false);
+				//$(item).attr('selected', false);
+				if($(item).val() < number){
+					$(item).attr('disabled', true);	
+					$(item).attr('selected', false);
+				}
+				else if($(item).val() == number){
+					console.log("val():" + $(item).val());
+					$(item).attr('selected', true);
+				}		
+			});
+		}
+		function ConstructionDetection(){
+			console.log($("select[name='construction']").val());
+			if($("select[name='construction']").val() == 'Normal'){
+				$("img").attr("src" ,"img/Statistics(common).png" );
+			}
+			else if($("select[name='construction']").val() == 'Emergency'){
+				$("img").attr("src" ,"img/Statistics(emergency).png");
+			}
+		}
+		$('button[submit = "submit"]').click(function(){
+			$('input').prop('disabled',false);
+			$('input:checked').prop('disabled',true);
+
+			var value = $('input:checked').val();
+			if(value == 1)
+				$("img").attr("src" ,"img/Statistics(common).png");
+			else if(value == 2)
+				$("img").attr("src" ,"img/Statistics(emergency).png");
+			else if(value == 3){
+				var Xlabel = $("select[name='construction']").val();
+				var Ylabel = $("select[name='factor']").val();
+				var StartYear = $("select[name='Start-Year']").val();
+				var EndYear = $("select[name='End-Year']").val();
+				console.log("img/"+Xlabel+"_"+Ylabel+"("+StartYear+"_"+EndYear+").png");
+				if(StartYear == EndYear)
+					$("img").attr("src" ,"img/"+Xlabel+"_"+Ylabel+"("+StartYear+").png");
+				else
+					$("img").attr("src" ,"img/"+Xlabel+"_"+Ylabel+"("+StartYear+"_"+EndYear+").png");
+			}
+		});
+		//Statistics(emergency)
+	</script>
+    
+	<script src="js/wow.min.js"></script>
+	<script src="js/jquery.easing.1.3.js"></script>
+	<script src="js/jquery.isotope.min.js"></script>
+	<script src="js/jquery.bxslider.min.js"></script>
+	<script type="text/javascript" src="js/fliplightbox.min.js"></script>
+	<script src="js/functions.js"></script>
+	<script type="text/javascript">$('.portfolio').flipLightBox()</script>
